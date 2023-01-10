@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
@@ -27,6 +28,10 @@ public class GameController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI resumeText;
     [SerializeField] private TextMeshProUGUI restartText;
     [SerializeField] private TextMeshProUGUI returnText;
+    //The event system
+    [SerializeField] private EventSystem eventSystem;
+    //The controlls
+    [SerializeField] private GameObject controlls;
     //The actual active followers
     private int activeFollowers = 0;
     //The position of the last coin. The first one is the starting position
@@ -84,7 +89,7 @@ public class GameController : MonoBehaviour
         //We put the final texts in blanc because we don't need them until the end of the game
         scoreText.text = "";
         scoreNumb.text = "";
-        //We deactivate the pause menu
+        //We deactivate the pause menu and the controlls
         pauseMenu.SetActive(false);
     }
 
@@ -151,12 +156,15 @@ public class GameController : MonoBehaviour
     //Function to resume the game
     public void ResumeGame()
     {
-        paused = !paused;
-        Cursor.visible = paused;
-        Time.timeScale = System.Convert.ToInt32(!paused);
-        player.SetWait(paused);
-        for (int i = 0; i < activeFollowers; i++) followers[i].SetWait(paused);
-        pauseMenu.SetActive(paused);
+        if (!starting)
+        {
+            paused = !paused;
+            Cursor.visible = paused;
+            Time.timeScale = System.Convert.ToInt32(!paused);
+            player.SetWait(paused);
+            for (int i = 0; i < activeFollowers; i++) followers[i].SetWait(paused);
+            pauseMenu.SetActive(paused);
+        }
     }
 
     //Function to spawn a new coin. To decide the position, we check where was the last position that a coin was spawned. If it spawned in a corner we spawn it on the other side, but if it spawned in the middle we decide where to spawn it 
@@ -165,10 +173,10 @@ public class GameController : MonoBehaviour
     {
         float newX = Random.Range(-1.0f, 1.0f);
         float newY = Random.Range(-1.0f, 1.0f);
-        if (lastPos.x - 1.0f < -19.0f) newX = Random.Range(lastPos.x + 1.0f, 20.0f);
-        else if(lastPos.x + 1.0f > 19.0f) newX = Random.Range(-20.0f, lastPos.x - 1.0f);
-        else if(newX < 0.0f) newX = Random.Range(-20.0f, lastPos.x - 1.0f);
-        else newX = Random.Range(lastPos.x + 1.0f, 20.0f);
+        if (lastPos.x - 1.0f < -18.0f) newX = Random.Range(lastPos.x + 1.0f, 19.0f);
+        else if(lastPos.x + 1.0f > 18.0f) newX = Random.Range(-19.0f, lastPos.x - 1.0f);
+        else if(newX < 0.0f) newX = Random.Range(-19.0f, lastPos.x - 1.0f);
+        else newX = Random.Range(lastPos.x + 1.0f, 19.0f);
         if (lastPos.y - 1.5f < -8.8f) newY = Random.Range(lastPos.y + 1.5f, 9.8f);
         else if (lastPos.y + 1.5f > 9.8f) newY = Random.Range(-9.8f, lastPos.y - 1.5f);
         else if (newY < 0.0f) newY = Random.Range(-9.8f, lastPos.y - 1.5f);
@@ -205,6 +213,7 @@ public class GameController : MonoBehaviour
         Cursor.visible = true;
         gameEnded = true;
         pauseMenu.SetActive(true);
+        controlls.SetActive(!paused);
         //We deactivate all the followers
         for (int i=0; i < activeFollowers; i++) followers[i].DectivateFollower();
         //We change the texts to put the game over message and the score

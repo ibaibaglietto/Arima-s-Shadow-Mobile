@@ -40,6 +40,15 @@ public class InputHandler : MonoBehaviour
     private int moveRight;
     private int jump;
     private int dash;
+    //Booleans to know if a button has been pressed
+    private bool startDash;
+    private bool endDash;
+    private bool startJump;
+    private bool endJump;
+    private bool startLeft;
+    private bool endLeft;
+    private bool startRight;
+    private bool endRight;
 
     private void Start()
     {
@@ -66,59 +75,87 @@ public class InputHandler : MonoBehaviour
         moveRightKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("moveRight"));
         jumpKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("jump"));
         dashKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("dash"));
+        startDash = false;
+        endDash = false;
+        startJump = false;
+        endJump = false;
+        startLeft = false;
+        endLeft = false;
+        startRight = false;
+        endRight = false;
     }
     //We save a maximum of 10 commands that will be sent every 1/50 seconds
     public void HandleInput()
     {
         if (totalCommands < 10)
         {
-            if (Input.GetKeyDown(jumpKey))
+            if (startJump)
             {
                 commands[totalCommands] = keys[jumpPress];
                 totalCommands++;
                 jump = 1;
+                startJump = false;
             }
-            if (Input.GetKeyUp(jumpKey))
+            if (endJump)
             {
                 commands[totalCommands] = keys[jumpRelease];
                 totalCommands++;
                 jump = 0;
+                endJump = false;
             }
-            if (Input.GetKeyDown(moveLeftKey))
+            if (startLeft)
             {
-                commands[totalCommands] = keys[moveLeftPress];
-                totalCommands++;
-                moveLeft = 1;
+                if (moveLeft == 0)
+                {
+                    commands[totalCommands] = keys[moveLeftPress];
+                    totalCommands++;
+                    moveLeft = 1;
+                }                    
+                startLeft = false;
             }
-            if (Input.GetKeyUp(moveLeftKey))
+            if (endLeft)
             {
-                commands[totalCommands] = keys[moveLeftRelease];
-                totalCommands++;
-                moveLeft = 0;
+                if(moveLeft == 1)
+                {
+                    commands[totalCommands] = keys[moveLeftRelease];
+                    totalCommands++;
+                    moveLeft = 0;
+                }
+                endLeft = false;
             }
-            if (Input.GetKeyDown(moveRightKey))
+            if (startRight)
             {
-                commands[totalCommands] = keys[moveRightPress];
-                totalCommands++;
-                moveRight = 1;
+                if(moveRight == 0)
+                {
+                    commands[totalCommands] = keys[moveRightPress];
+                    totalCommands++;
+                    moveRight = 1;
+                }
+                startRight = false;
             }
-            if (Input.GetKeyUp(moveRightKey))
+            if (endRight)
             {
-                commands[totalCommands] = keys[moveRightRelease];
-                totalCommands++;
-                moveRight = 0;
+                if(moveRight == 1)
+                {
+                    commands[totalCommands] = keys[moveRightRelease];
+                    totalCommands++;
+                    moveRight = 0;
+                }
+                endRight = false;
             }
-            if (Input.GetKeyDown(dashKey))
+            if (startDash)
             {
                 commands[totalCommands] = keys[dashPress];
                 totalCommands++;
                 dash = 1;
+                startDash = false;
             }
-            if (Input.GetKeyUp(dashKey))
+            if (endDash)
             {
                 commands[totalCommands] = keys[dashRelease];
                 totalCommands++;
                 dash = 0;
+                endDash = false;
             }
         }
     }
@@ -216,5 +253,45 @@ public class InputHandler : MonoBehaviour
         position = lastPos[numb];
         velocity = lastVel[numb];
         return previousCommands;
+    }
+    //
+    public void StartDash()
+    {
+        startDash = true;
+    }
+    //
+    public void EndDash()
+    {
+        endDash = true;
+    }
+    //
+    public void StartJump()
+    {
+        startJump = true;
+    }
+    //
+    public void EndJump()
+    {
+        endJump = true;
+    }
+    //
+    public void StartLeft()
+    {
+        startLeft = true;
+    }
+    //
+    public void EndLeft()
+    {
+        endLeft = true;
+    }
+    //
+    public void StartRight()
+    {
+        startRight = true;
+    }
+    //
+    public void EndRight()
+    {
+        endRight = true;
     }
 }
