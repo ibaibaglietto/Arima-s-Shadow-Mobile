@@ -9,7 +9,7 @@ public class FollowInputComponent : InputComponent
     //An array of command arrays that we will use to save all the commands that the player will do
     private Command[,] previousCommands = new Command[max, 10];
     //The number of the command array that we are executing now
-    private int lastCommand;
+    private int lastCommand = 0;
     //The number of the command that we are executing
     private int commandNumb = 0;
     //The temporary position and velocity that we will put to the follower if the command number is divisible by 25 (every 0.5 seconds).
