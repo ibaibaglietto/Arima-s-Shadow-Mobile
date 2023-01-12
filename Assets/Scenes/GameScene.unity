@@ -3451,8 +3451,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdb82141bc8d27e4bb16e6632196f2ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 1482508023898270803, guid: ecee585ea34825445bee56d186fede9a, type: 3}
-  followerPrefab: {fileID: 2483547401178677088, guid: 1d0d6327b97d6b14f95fca0a61eec7da, type: 3}
+  playerPrefab:
+  - {fileID: 5116241424975459219, guid: ddecf8886b3269c4cac55257c982d2d4, type: 3}
+  - {fileID: 1482508023898270803, guid: ecee585ea34825445bee56d186fede9a, type: 3}
+  - {fileID: 6957082930546759423, guid: 4013359ffb8bfb246bb33879f9581c45, type: 3}
+  - {fileID: 1474982872197285204, guid: 2be38925b61ebd04f8f82265a9e22efa, type: 3}
+  - {fileID: 6755932287044049315, guid: f31c1c7b11c64934fbfa2b8bdfd34b2f, type: 3}
+  followerPrefab:
+  - {fileID: 4176232420792878303, guid: bb29c049c497874458156f23379a1415, type: 3}
+  - {fileID: 2483547401178677088, guid: 1d0d6327b97d6b14f95fca0a61eec7da, type: 3}
+  - {fileID: 4189447157156445636, guid: 2017bcac3128d264a8e040115449442e, type: 3}
+  - {fileID: 1616998347736760141, guid: acb11b43f8158d84b9fe65d9d86ef859, type: 3}
+  - {fileID: 4251302767080779594, guid: 87dd20c78a4d6354ab742be63dc3ffe3, type: 3}
   followersParent: {fileID: 272875665}
   mainCamera: {fileID: 519420031}
   followers:
