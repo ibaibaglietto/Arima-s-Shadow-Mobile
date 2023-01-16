@@ -66,14 +66,14 @@ public class ArimaGraphicsComponent : GraphicsComponent
                     gameObject.GetComponent<Animator>().SetBool("isJumping", false);
                     state = State.STATE_FALLING_RIGHT;
                 }
-                else if (gameObject.speed < -0.1f && !gameObject.waiting)
+                else if (gameObject.speed < -0.01f && !gameObject.waiting)
                 {
                     gameObject.GetComponent<Animator>().SetBool("isMoving", true);
                     gameObject.GetComponent<Animator>().SetBool("lookingRight", false);
                     gameObject.lookingRight = -1;
                     state = State.STATE_RUNNING_LEFT;
                 }
-                else if (gameObject.speed > 0.1f && !gameObject.waiting)
+                else if (gameObject.speed > 0.01f && !gameObject.waiting)
                 {
                     gameObject.GetComponent<Animator>().SetBool("isMoving", true);
                     state = State.STATE_RUNNING_RIGHT;
@@ -116,12 +116,12 @@ public class ArimaGraphicsComponent : GraphicsComponent
                     gameObject.GetComponent<Animator>().SetBool("isJumping", false);
                     state = State.STATE_FALLING_LEFT;
                 }
-                else if (gameObject.speed < -0.1f)
+                else if (gameObject.speed < -0.01f)
                 {
                     gameObject.GetComponent<Animator>().SetBool("isMoving", true);
                     state = State.STATE_RUNNING_LEFT;
                 }
-                else if (gameObject.speed > 0.1f)
+                else if (gameObject.speed > 0.01f)
                 {
                     gameObject.GetComponent<Animator>().SetBool("isMoving", true);
                     gameObject.GetComponent<Animator>().SetBool("lookingRight", true);
@@ -167,7 +167,7 @@ public class ArimaGraphicsComponent : GraphicsComponent
                     gameObject.GetComponent<Animator>().SetBool("isJumping", false);
                     state = State.STATE_FALLING_RIGHT;
                 }
-                else if (gameObject.speed < -0.1f)
+                else if (gameObject.speed < -0.01f)
                 {
                     gameObject.GetComponent<Animator>().SetBool("lookingRight", false);
                     gameObject.lookingRight = -1;
@@ -217,7 +217,7 @@ public class ArimaGraphicsComponent : GraphicsComponent
                     gameObject.GetComponent<Animator>().SetBool("isJumping", false);
                     state = State.STATE_FALLING_LEFT;
                 }
-                else if (gameObject.speed > 0.1f)
+                else if (gameObject.speed > 0.01f)
                 {
                     gameObject.GetComponent<Animator>().SetBool("lookingRight", true);
                     gameObject.lookingRight = 1;
@@ -262,7 +262,7 @@ public class ArimaGraphicsComponent : GraphicsComponent
                     gameObject.GetComponent<Animator>().SetBool("isJumping", false);
                     state = State.STATE_IDLE_RIGHT;
                 }
-                else if (gameObject.speed < -0.1f)
+                else if (gameObject.speed < -0.01f)
                 {
                     gameObject.GetComponent<Animator>().SetBool("lookingRight", false);
                     gameObject.lookingRight = -1;
@@ -301,7 +301,7 @@ public class ArimaGraphicsComponent : GraphicsComponent
                     gameObject.GetComponent<Animator>().SetBool("isJumping", false);
                     state = State.STATE_IDLE_LEFT;
                 }
-                else if (gameObject.speed > 0.1f)
+                else if (gameObject.speed > 0.01f)
                 {
                     gameObject.GetComponent<Animator>().SetBool("lookingRight", true);
                     gameObject.lookingRight = 1;
@@ -335,7 +335,7 @@ public class ArimaGraphicsComponent : GraphicsComponent
                     gameObject.GetComponent<Animator>().SetBool("isMoving", false);
                     state = State.STATE_IDLE_RIGHT;
                 }
-                else if (gameObject.speed < -0.1f)
+                else if (gameObject.speed < -0.01f)
                 {
                     gameObject.GetComponent<Animator>().SetBool("lookingRight", false);
                     gameObject.lookingRight = -1;
@@ -369,7 +369,7 @@ public class ArimaGraphicsComponent : GraphicsComponent
                     gameObject.GetComponent<Animator>().SetBool("isMoving", false);
                     state = State.STATE_IDLE_LEFT;
                 }
-                else if (gameObject.speed > 0.1f)
+                else if (gameObject.speed > 0.01f)
                 {
                     gameObject.GetComponent<Animator>().SetBool("lookingRight", true);
                     gameObject.lookingRight = 1;

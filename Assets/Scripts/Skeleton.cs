@@ -89,6 +89,11 @@ public class Skeleton : MonoBehaviour
         gravity = true;
     }
 
+    public void Move(float s)
+    {
+        speed = s;
+    }
+
     public void MoveRight()
     {
         speed += 1.0f;

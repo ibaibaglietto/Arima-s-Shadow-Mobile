@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 
 public class InputHandler : MonoBehaviour
 {
@@ -21,15 +21,16 @@ public class InputHandler : MonoBehaviour
     //Arrays of vectors to save the position and velocity of the player, to mitigate the error that can be caused when the followers use the commands that the player generated
     private Vector3[] lastPos = new Vector3[100];
     private Vector3[] lastVel = new Vector3[100];
-    //The strings where we will save the name of the command that will be generated. For example, if a is the button connected to the moveLeft command, AButtonPress and AButtonRelease will be linked to the MoveLeftCommand and StopMoveLeftCommand.
-    private string moveLeftPress;
-    private string moveLeftRelease;
-    private string moveRightPress;
-    private string moveRightRelease;
-    private string jumpPress;
-    private string jumpRelease;
-    private string dashPress;
-    private string dashRelease;
+    //The commands
+    private Command moveLeftPress;
+    private Command moveLeftRelease;
+    private Command moveRightPress;
+    private Command moveRightRelease;
+    private MoveCommand move;
+    private Command jumpPress;
+    private Command jumpRelease;
+    private Command dashPress;
+    private Command dashRelease;
     //The keycodes of the 4 movement commands
     private KeyCode moveLeftKey;
     private KeyCode moveRightKey;
@@ -49,32 +50,49 @@ public class InputHandler : MonoBehaviour
     private bool endLeft;
     private bool startRight;
     private bool endRight;
+    //The player input
+    private PlayerInput playerInput;
+    //The last speed
+    private float lastSpeed = 0.0f;
+    //A boolean to know if we have already moved the player this fixedupdate and an int to know where it is stored
+    private bool moved = false;
+    private int movedPos;
 
     private void Start()
     {
+        //We find the player input
+        playerInput = GetComponent<PlayerInput>();
         //We save the strings that will be connected to the commands
-        moveLeftPress = PlayerPrefs.GetString("moveLeft") + "ButtonPress";
-        moveLeftRelease = PlayerPrefs.GetString("moveLeft") + "ButtonRelease";
-        moveRightPress = PlayerPrefs.GetString("moveRight") + "ButtonPress";
-        moveRightRelease = PlayerPrefs.GetString("moveRight") + "ButtonRelease";
-        jumpPress = PlayerPrefs.GetString("jump") + "ButtonPress";
-        jumpRelease = PlayerPrefs.GetString("jump") + "ButtonRelease";
-        dashPress = PlayerPrefs.GetString("dash") + "ButtonPress";
-        dashRelease = PlayerPrefs.GetString("dash") + "ButtonRelease";
+        //moveLeftPress = PlayerPrefs.GetString("moveLeft") + "ButtonPress";
+        //moveLeftRelease = PlayerPrefs.GetString("moveLeft") + "ButtonRelease";
+        //moveRightPress = PlayerPrefs.GetString("moveRight") + "ButtonPress";
+        //moveRightRelease = PlayerPrefs.GetString("moveRight") + "ButtonRelease";
+        //jumpPress = PlayerPrefs.GetString("jump") + "ButtonPress";
+        //jumpRelease = PlayerPrefs.GetString("jump") + "ButtonRelease";
+        //dashPress = PlayerPrefs.GetString("dash") + "ButtonPress";
+        //dashRelease = PlayerPrefs.GetString("dash") + "ButtonRelease";
         //We add to the dictionary the strings with their connected command.
-        keys.Add(moveLeftPress, new MoveLeftCommand());
-        keys.Add(moveLeftRelease, new StopMoveLeftCommand());
-        keys.Add(moveRightPress, new MoveRightCommand());
-        keys.Add(moveRightRelease, new StopMoveRightCommand());
-        keys.Add(jumpPress, new JumpCommand());
-        keys.Add(jumpRelease, new StopJumpCommand());
-        keys.Add(dashPress, new DashCommand());
-        keys.Add(dashRelease, new StopDashCommand());
+        //keys.Add(moveLeftPress, new MoveLeftCommand());
+        //keys.Add(moveLeftRelease, new StopMoveLeftCommand());
+        //keys.Add(moveRightPress, new MoveRightCommand());
+        //keys.Add(moveRightRelease, new StopMoveRightCommand());
+        //keys.Add(jumpPress, new JumpCommand());
+        //keys.Add(jumpRelease, new StopJumpCommand());
+        //keys.Add(dashPress, new DashCommand());
+        //keys.Add(dashRelease, new StopDashCommand());
+        moveLeftPress = new MoveLeftCommand();
+        moveLeftRelease = new StopMoveLeftCommand();
+        moveRightPress = new MoveRightCommand();
+        moveRightRelease = new StopMoveRightCommand();
+        jumpPress = new JumpCommand();
+        jumpRelease = new StopJumpCommand();
+        dashPress = new DashCommand();
+        dashRelease = new StopDashCommand();
         //Using refraction, we save the keycodes that will activate the commands
-        moveLeftKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("moveLeft"));
-        moveRightKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("moveRight"));
-        jumpKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("jump"));
-        dashKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("dash"));
+        //moveLeftKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("moveLeft"));
+        //moveRightKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("moveRight"));
+        //jumpKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("jump"));
+        //dashKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("dash"));
         startDash = false;
         endDash = false;
         startJump = false;
@@ -87,27 +105,43 @@ public class InputHandler : MonoBehaviour
     //We save a maximum of 10 commands that will be sent every 1/50 seconds
     public void HandleInput()
     {
+        //Debug.Log(playerInput.actions["Move"].ReadValue<Vector2>().x);
         if (totalCommands < 10)
         {
             if (startJump)
             {
-                commands[totalCommands] = keys[jumpPress];
+                commands[totalCommands] = jumpPress;
                 totalCommands++;
                 jump = 1;
                 startJump = false;
             }
             if (endJump)
             {
-                commands[totalCommands] = keys[jumpRelease];
+                commands[totalCommands] = jumpRelease;
                 totalCommands++;
                 jump = 0;
                 endJump = false;
+            }
+            if( Mathf.Abs(lastSpeed - playerInput.actions["Move"].ReadValue<Vector2>().x) > 0.01f)
+            {
+                lastSpeed = playerInput.actions["Move"].ReadValue<Vector2>().x;
+                if (!moved)
+                {
+                    commands[totalCommands] = new MoveCommand(lastSpeed);
+                    movedPos = totalCommands;
+                    moved = true;
+                    totalCommands++;
+                }
+                else
+                {
+                    commands[movedPos] = new MoveCommand(lastSpeed);
+                }
             }
             if (startLeft)
             {
                 if (moveLeft == 0)
                 {
-                    commands[totalCommands] = keys[moveLeftPress];
+                    commands[totalCommands] = moveLeftPress;
                     totalCommands++;
                     moveLeft = 1;
                 }                    
@@ -117,7 +151,7 @@ public class InputHandler : MonoBehaviour
             {
                 if(moveLeft == 1)
                 {
-                    commands[totalCommands] = keys[moveLeftRelease];
+                    commands[totalCommands] = moveLeftRelease;
                     totalCommands++;
                     moveLeft = 0;
                 }
@@ -127,7 +161,7 @@ public class InputHandler : MonoBehaviour
             {
                 if(moveRight == 0)
                 {
-                    commands[totalCommands] = keys[moveRightPress];
+                    commands[totalCommands] = moveRightPress;
                     totalCommands++;
                     moveRight = 1;
                 }
@@ -137,7 +171,7 @@ public class InputHandler : MonoBehaviour
             {
                 if(moveRight == 1)
                 {
-                    commands[totalCommands] = keys[moveRightRelease];
+                    commands[totalCommands] = moveRightRelease;
                     totalCommands++;
                     moveRight = 0;
                 }
@@ -145,14 +179,14 @@ public class InputHandler : MonoBehaviour
             }
             if (startDash)
             {
-                commands[totalCommands] = keys[dashPress];
+                commands[totalCommands] = dashPress;
                 totalCommands++;
                 dash = 1;
                 startDash = false;
             }
             if (endDash)
             {
-                commands[totalCommands] = keys[dashRelease];
+                commands[totalCommands] = dashRelease;
                 totalCommands++;
                 dash = 0;
                 endDash = false;
@@ -163,63 +197,27 @@ public class InputHandler : MonoBehaviour
     {
         if (totalCommands < 10)
         {
-            if (Input.GetKey(jumpKey))
+            if (jump == 1)
             {
-                if(jump != 1)
-                {
-                    commands[totalCommands] = keys[jumpPress];
-                    totalCommands++;
-                    jump = 1;
-                }
-            }
-            else if (jump == 1)
-            {
-                commands[totalCommands] = keys[jumpRelease];
+                commands[totalCommands] = jumpRelease;
                 totalCommands++;
                 jump = 0;
             }
-            if (Input.GetKey(moveLeftKey))
+            if (moveLeft == 1)
             {
-                if (moveLeft != 1)
-                {
-                    commands[totalCommands] = keys[moveLeftPress];
-                    totalCommands++;
-                    moveLeft = 1;
-                }                    
-            }
-            else if (moveLeft == 1)
-            {
-                commands[totalCommands] = keys[moveLeftRelease];
+                commands[totalCommands] = moveLeftRelease;
                 totalCommands++;
                 moveLeft = 0;
             }
-            if (Input.GetKey(moveRightKey))
+            if (moveRight == 1)
             {
-                if (moveRight != 1)
-                {
-                    commands[totalCommands] = keys[moveRightPress];
-                    totalCommands++;
-                    moveRight = 1;
-                }                    
-            }
-            else if (moveRight == 1)
-            {
-                commands[totalCommands] = keys[moveRightRelease];
+                commands[totalCommands] = moveRightRelease;
                 totalCommands++;
                 moveRight = 0;
             }
-            if (Input.GetKey(dashKey))
+            if (dash == 1)
             {
-                if (dash != 1)
-                {
-                    commands[totalCommands] = keys[dashPress];
-                    totalCommands++;
-                    dash = 1;
-                }                    
-            }
-            else if (dash == 1)
-            {
-                commands[totalCommands] = keys[dashRelease];
+                commands[totalCommands] = dashRelease;
                 totalCommands++;
                 dash = 0;
             }
@@ -243,7 +241,9 @@ public class InputHandler : MonoBehaviour
             lastCommands = 0;
         }
         sendCommands = commands;
-        commands = new Command[10];
+        commands = new Command[10]; 
+        movedPos = 0;
+        moved = false;
         totalCommands = 0;
         return sendCommands;
     }

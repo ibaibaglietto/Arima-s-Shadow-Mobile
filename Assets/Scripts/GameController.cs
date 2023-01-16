@@ -120,20 +120,6 @@ public class GameController : MonoBehaviour
                 NewCoin();
             }
         }
-        else
-        {
-            //We pause or unpause the game when the pause key is pressed, putting the player and the followers in waiting state. When the game is paused, we make the cursor visible.
-            if (Input.GetKeyDown(pauseKey) && !gameEnded)
-            {
-                paused = !paused;
-                Cursor.visible = paused;
-                Time.timeScale = System.Convert.ToInt32(!paused);
-                player.SetWait(paused);
-                for (int i = 0; i < activeFollowers; i++) followers[i].SetWait(paused);
-                pauseMenu.SetActive(paused);
-            }
-        }
-        
     }
 
     //We pause the game when the player alt tabs.

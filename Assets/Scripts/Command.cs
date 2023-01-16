@@ -24,6 +24,20 @@ public class StopJumpCommand : Command
     }
 }
 
+public class MoveCommand : Command
+{
+    private float speed;
+
+    public MoveCommand(float s)
+    {
+        speed = s;
+    }
+    public override void Execute(Skeleton gameObject)
+    {
+        gameObject.Move(speed);
+    }
+}
+
 public class MoveLeftCommand : Command
 {
     public override void Execute(Skeleton gameObject)

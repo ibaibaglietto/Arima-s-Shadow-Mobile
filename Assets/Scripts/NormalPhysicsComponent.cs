@@ -80,7 +80,8 @@ public class NormalPhysicsComponent : PhysicsComponent
         //If the skeleton is dead or waiting the x velocity will be 0
         else
         {
-            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0.0f, gameObject.GetComponent<Rigidbody2D>().velocity.y);
+            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0.0f, gameObject.GetComponent<Rigidbody2D>().velocity.y); 
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
         }
     }
 }
