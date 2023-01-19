@@ -7,21 +7,6 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    //The cursors
-    public Texture2D cursorArrow16;
-    public Texture2D cursorArrow20;
-    public Texture2D cursorArrow26;
-    public Texture2D cursorArrow29;
-    public Texture2D cursorArrow32;
-    public Texture2D cursorArrow34;
-    public Texture2D cursorArrow35;
-    public Texture2D cursorArrow36;
-    public Texture2D cursorArrow40;
-    public Texture2D cursorArrow46;
-    public Texture2D cursorArrow48;
-    public Texture2D cursorArrow51;
-    public Texture2D cursorArrow64;
-    public Texture2D cursorArrow96;
     //The main menu
     private GameObject mainMenu;
     //The select character menu
@@ -30,6 +15,8 @@ public class MainMenu : MonoBehaviour
     private GameObject settingsMenu;
     //The controls menu
     private GameObject controlsMenu;
+    //The change buttons position submenu
+    private GameObject changeButtonPosMenu;
     //The credits menu
     private GameObject creditsMenu;
     //The how to play menu
@@ -86,14 +73,8 @@ public class MainMenu : MonoBehaviour
     private TextMeshProUGUI saveConfirmText;
     private TextMeshProUGUI languageChooseText;
     private TextMeshProUGUI saveLanguageText;
-    private TextMeshProUGUI pauseText;
-    private TextMeshProUGUI moveLeftText;
-    private TextMeshProUGUI moveRightText;
-    private TextMeshProUGUI jumpText;
-    private TextMeshProUGUI dashText;
     private TextMeshProUGUI controlsTitleText;
     private TextMeshProUGUI returnToSettingsText;
-    private TextMeshProUGUI changeControlButtonText;
     private TextMeshProUGUI creditsTitleText;
     private TextMeshProUGUI creditsReturnText;
     private TextMeshProUGUI howToPlayTitleText;
@@ -104,6 +85,13 @@ public class MainMenu : MonoBehaviour
     private TextMeshProUGUI howToPlayPage4;
     private TextMeshProUGUI howToPlayPage5;
     private TextMeshProUGUI howToPlayPage6;
+    //The gameobjects of the buttons
+    private GameObject moveLeft;
+    private GameObject moveRight;
+    private GameObject moveJoystick;
+    private GameObject jump;
+    private GameObject dash;
+    private GameObject pause;
     //The music source
     private AudioSource musicSource;
     //The language dropdowns
@@ -111,7 +99,12 @@ public class MainMenu : MonoBehaviour
     private TMP_Dropdown languageChooseDropdown;
     //An integer to know what page of the explanation menu we have opened
     private int howToPlayNumb = 0;
-
+    //The controls 
+    private TMP_Dropdown movementDropdown;
+    //An int to know if the buttons are being changed and what button is being changed. 0-> no changes, 1-> moveLeft, 2-> moveRight, 3-> joystick, 4-> jump, 5-> dash, 6-> pause
+    private int changingButtonPos = 0;
+    //A vector 2 to know the new position of the button
+    private Vector2 newButtonPos;
 
     void Start()
     {
@@ -122,6 +115,7 @@ public class MainMenu : MonoBehaviour
         settingsMenu = GameObject.Find("Settings");
         selectCharacterMenu = GameObject.Find("SelectCharacter");
         controlsMenu = GameObject.Find("Controls");
+        changeButtonPosMenu = GameObject.Find("ChangeButtonsPosition");
         creditsMenu = GameObject.Find("Credits");
         howToPlayMenu = GameObject.Find("HowToPlay");
         framerate = GameObject.Find("DropdownFramerate").GetComponent<TMP_Dropdown>();
@@ -148,14 +142,8 @@ public class MainMenu : MonoBehaviour
         languageChooseText = GameObject.Find("LanguageChooseText").GetComponent<TextMeshProUGUI>();
         languageChooseDropdown = GameObject.Find("DropdownChooseLanguage").GetComponent<TMP_Dropdown>();
         saveLanguageText = GameObject.Find("SaveLanguageText").GetComponent<TextMeshProUGUI>();
-        pauseText = GameObject.Find("PauseText").GetComponent<TextMeshProUGUI>();
-        moveLeftText = GameObject.Find("MoveLeftText").GetComponent<TextMeshProUGUI>();
-        moveRightText = GameObject.Find("MoveRightText").GetComponent<TextMeshProUGUI>();
-        jumpText = GameObject.Find("JumpText").GetComponent<TextMeshProUGUI>();
-        dashText = GameObject.Find("DashText").GetComponent<TextMeshProUGUI>();
         controlsTitleText = GameObject.Find("ControlsTitleText").GetComponent<TextMeshProUGUI>();
         returnToSettingsText = GameObject.Find("ReturnControlText").GetComponent<TextMeshProUGUI>();
-        changeControlButtonText = GameObject.Find("ChangeControlText").GetComponent<TextMeshProUGUI>();
         creditsTitleText = GameObject.Find("CreditsTitleText").GetComponent<TextMeshProUGUI>();
         creditsReturnText = GameObject.Find("CreditsReturnText").GetComponent<TextMeshProUGUI>();
         howToPlayTitleText = GameObject.Find("HowToPlayTitleText").GetComponent<TextMeshProUGUI>();
@@ -166,16 +154,24 @@ public class MainMenu : MonoBehaviour
         howToPlayPage4 = GameObject.Find("Page4Text").GetComponent<TextMeshProUGUI>();
         howToPlayPage5 = GameObject.Find("Page5Text").GetComponent<TextMeshProUGUI>();
         howToPlayPage6 = GameObject.Find("Page6Text").GetComponent<TextMeshProUGUI>();
+        moveLeft = GameObject.Find("LeftArrow");
+        moveRight = GameObject.Find("RightArrow");
+        moveJoystick = GameObject.Find("Joystick");
+        jump = GameObject.Find("Jump");
+        dash = GameObject.Find("Dash");
+        pause = GameObject.Find("Pause");
         howToPlayPrevButton = GameObject.Find("HowToPlayPrev").GetComponent<Button>();
         howToPlayNextButton = GameObject.Find("HowToPlayNext").GetComponent<Button>();
         musicSource = GameObject.Find("MusicSource").GetComponent<AudioSource>();
         masterSlider = GameObject.Find("MainVolumeSlider").GetComponent<Slider>();
         musicSlider = GameObject.Find("MusicSlider").GetComponent<Slider>();
         effectsSlider = GameObject.Find("EffectsSlider").GetComponent<Slider>();
+        movementDropdown = GameObject.Find("DropdownMovement").GetComponent<TMP_Dropdown>();
         characterSelected = new[] {GameObject.Find("Character1Selected"), GameObject.Find("Character2Selected"), GameObject.Find("Character3Selected"), GameObject.Find("Character4Selected"), GameObject.Find("Character5Selected") };
         //We deactivate the parts of the menu that are not shown at the beginning
         settingsMenu.SetActive(false);
         selectCharacterMenu.SetActive(false);
+        changeButtonPosMenu.SetActive(false);
         controlsMenu.SetActive(false); 
         creditsMenu.SetActive(false);
         for(int i=1; i<howToPlayExplanation.Length;i++) howToPlayExplanation[i].SetActive(false);
@@ -205,11 +201,44 @@ public class MainMenu : MonoBehaviour
         //A float to set the effects audio mixer
         if (!PlayerPrefs.HasKey("effectsAudio")) PlayerPrefs.SetFloat("effectsAudio", 1.0f);
         //The controls
-        if (!PlayerPrefs.HasKey("moveLeft")) PlayerPrefs.SetString("moveLeft", "A");
-        if (!PlayerPrefs.HasKey("moveRight")) PlayerPrefs.SetString("moveRight", "D");
-        if (!PlayerPrefs.HasKey("jump")) PlayerPrefs.SetString("jump", "Space");
-        if (!PlayerPrefs.HasKey("dash")) PlayerPrefs.SetString("dash", "Mouse1");
-        if (!PlayerPrefs.HasKey("pause")) PlayerPrefs.SetString("pause", "Escape");
+        if (!PlayerPrefs.HasKey("MovementMode")) PlayerPrefs.SetInt("MovementMode", 0);
+        //The positions of the buttons
+        if (!PlayerPrefs.HasKey("LeftButtonX")) PlayerPrefs.SetFloat("LeftButtonX", 0.08f);
+        if (!PlayerPrefs.HasKey("LeftButtonY")) PlayerPrefs.SetFloat("LeftButtonY", 0.143f);
+        if (!PlayerPrefs.HasKey("RightButtonX")) PlayerPrefs.SetFloat("RightButtonX", 0.2273906f);
+        if (!PlayerPrefs.HasKey("RightButtonY")) PlayerPrefs.SetFloat("RightButtonY", 0.143f);
+        if (!PlayerPrefs.HasKey("JoystickX")) PlayerPrefs.SetFloat("JoystickX", 0.1174375f);
+        if (!PlayerPrefs.HasKey("JoystickY")) PlayerPrefs.SetFloat("JoystickY", 0.2088333f);
+        if (!PlayerPrefs.HasKey("JumpButtonX")) PlayerPrefs.SetFloat("JumpButtonX", 0.7942656f);
+        if (!PlayerPrefs.HasKey("JumpButtonY")) PlayerPrefs.SetFloat("JumpButtonY", 0.1291945f);
+        if (!PlayerPrefs.HasKey("DashButtonX")) PlayerPrefs.SetFloat("DashButtonX", 0.9236094f);
+        if (!PlayerPrefs.HasKey("DashButtonY")) PlayerPrefs.SetFloat("DashButtonY", 0.272f);
+        if (!PlayerPrefs.HasKey("PauseButtonX")) PlayerPrefs.SetFloat("PauseButtonX", 0.9236094f);
+        if (!PlayerPrefs.HasKey("PauseButtonY")) PlayerPrefs.SetFloat("PauseButtonY", 0.8933056f);
+        jump.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JumpButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JumpButtonX")) * 0.93f + 0.047f);
+        jump.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JumpButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JumpButtonX")) * 0.93f + 0.047f);
+        jump.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        dash.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("DashButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("DashButtonX")) * 0.93f + 0.047f);
+        dash.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("DashButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("DashButtonX")) * 0.93f + 0.047f);
+        dash.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        moveLeft.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("LeftButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("LeftButtonX")) * 0.93f + 0.047f);
+        moveLeft.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("LeftButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("LeftButtonX")) * 0.93f + 0.047f);
+        moveLeft.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        moveRight.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("RightButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("RightButtonX")) * 0.93f + 0.047f);
+        moveRight.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("RightButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("RightButtonX")) * 0.93f + 0.047f);
+        moveRight.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        moveJoystick.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JoystickY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JoystickX")) * 0.93f + 0.047f);
+        moveJoystick.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JoystickY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JoystickX")) * 0.93f + 0.047f);
+        moveJoystick.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        pause.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("PauseButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("PauseButtonX")) * 0.93f + 0.047f);
+        pause.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("PauseButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("PauseButtonX")) * 0.93f + 0.047f);
+        pause.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        if (PlayerPrefs.GetInt("MovementMode") == 0) moveJoystick.SetActive(false);
+        else
+        {
+            moveLeft.SetActive(false);
+            moveRight.SetActive(false);
+        }
         //We put the real value on the sliders
         masterSlider.value = PlayerPrefs.GetFloat("masterAudio");
         musicSlider.value = PlayerPrefs.GetFloat("musicAudio");
@@ -231,6 +260,7 @@ public class MainMenu : MonoBehaviour
         else if (PlayerPrefs.GetInt("framerate") == 120) framerate.value = 3;
         else if (PlayerPrefs.GetInt("framerate") == 144) framerate.value = 4;
         else if (PlayerPrefs.GetInt("framerate") == 0) framerate.value = 5;
+        movementDropdown.value = PlayerPrefs.GetInt("MovementMode");
         //We write al the texts depending on the choosen language
         WriteTexts();
         //We put the actual value on the language dropdown
@@ -244,6 +274,27 @@ public class MainMenu : MonoBehaviour
     public void NewGame()
     {
         SceneManager.LoadScene(1);
+    }
+
+    private void Update()
+    {
+        if(changingButtonPos != 0)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), Input.mousePosition, GetComponent<Canvas>().worldCamera, out newButtonPos);
+            Debug.Log(newButtonPos);
+            if (changingButtonPos == 4)
+            {
+                jump.transform.position = GetComponent<Transform>().TransformPoint(newButtonPos);
+                if (Input.GetKeyDown(KeyCode.Mouse0))
+                {
+                    changingButtonPos = 0;
+                    newButtonPos = new Vector2(jump.GetComponent<RectTransform>().anchoredPosition.x / jump.transform.parent.GetComponent<RectTransform>().rect.width, jump.GetComponent<RectTransform>().anchoredPosition.y / jump.transform.parent.GetComponent<RectTransform>().rect.height);
+                    jump.GetComponent<RectTransform>().anchorMin = newButtonPos;
+                    jump.GetComponent<RectTransform>().anchorMax = newButtonPos;
+                    jump.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, 0.0f);
+                }
+            }            
+        }
     }
     void FixedUpdate()
     {
@@ -399,14 +450,8 @@ public class MainMenu : MonoBehaviour
             howToPlayPage5.text = "You can stop the game in any moment, then continuing, restarting or returning to the main menu.";
             howToPlayPage6.text = "You can change all the buttons of the controls at the settings menu, use the button combination that is better to you!";
             howToPlayReturnText.text = "Return";
-            pauseText.text = "Pause the game";
-            moveLeftText.text = "Move left";
-            moveRightText.text = "Move right";
-            jumpText.text = "Jump";
-            dashText.text = "Dash";
             controlsTitleText.text = "Controls";
             returnToSettingsText.text = "Return to settings";
-            changeControlButtonText.text = "Press the button you want to use.";
 
         }
         else if (PlayerPrefs.GetInt("language") == 1)
@@ -439,14 +484,8 @@ public class MainMenu : MonoBehaviour
             howToPlayPage5.text = "Puedes parar el juego en cualquier momento, luego continuándolo, reiniciando o regresando al menú principal.";
             howToPlayPage6.text = "Puedes cambiar los botones de todos los controles desde el menú de ajustes, ¡usa la combinación de botones que más te guste!";
             howToPlayReturnText.text = "Volver";
-            pauseText.text = "Pausar el juego";
-            moveLeftText.text = "Moverse a la izquierda";
-            moveRightText.text = "Moverse a la derecha";
-            jumpText.text = "Saltar";
-            dashText.text = "Embestir";
             controlsTitleText.text = "Controles";
             returnToSettingsText.text = "Volver a los ajustes";
-            changeControlButtonText.text = "Presiona el botón que quieras usar.";
         }
         else if (PlayerPrefs.GetInt("language") == 2)
         {
@@ -478,14 +517,8 @@ public class MainMenu : MonoBehaviour
             howToPlayPage5.text = "Jokoa edozein momentuan geldi dezakezu, gero jokoa jarraituz, berrabiaraziz edo menu nagusira itzuliz.";
             howToPlayPage6.text = "Kontrol guztien botoiak ezarpenen menutik alda ditzakezu, zuri gehien gustatzen zaizun botoi konbinazioa erabil ezazu!";
             howToPlayReturnText.text = "Itzuli";
-            pauseText.text = "Jokoa gelditu";
-            moveLeftText.text = "Ezkerrerantz mugitu";
-            moveRightText.text = "Eskuinerantz mugitu";
-            jumpText.text = "Salto egin";
-            dashText.text = "Desplazamendu bizkorra";
             controlsTitleText.text = "Kontrolak";
             returnToSettingsText.text = "Ezarpenetara itzuli";
-            changeControlButtonText.text = "Erabili nahi duzun botoia sakatu.";
         }
     }
 
@@ -501,6 +534,24 @@ public class MainMenu : MonoBehaviour
     {
         settingsMenu.SetActive(true);
         controlsMenu.SetActive(false);
+    }
+
+    //Functions to open and close the change buttons position menu
+    public void OpenChangeButtonPos()
+    {
+        changeButtonPosMenu.SetActive(true);
+    }
+    public void CloseChangeButtonPos()
+    {
+        changeButtonPosMenu.SetActive(false);
+    }
+
+    //Function to start changing the button
+    public void StartChangeButtonPos(int i)
+    {
+        changingButtonPos = i;
+        jump.GetComponent<RectTransform>().anchorMin = new Vector2(0.0f,0.0f);
+        jump.GetComponent<RectTransform>().anchorMax = new Vector2(0.0f, 0.0f);
     }
 
     //Function to open the credits menu
@@ -562,5 +613,22 @@ public class MainMenu : MonoBehaviour
         if (PlayerPrefs.GetInt("language") == 0) languageDropdown.value = 0;
         else if (PlayerPrefs.GetInt("language") == 1) languageDropdown.value = 1;
         else if (PlayerPrefs.GetInt("language") == 2) languageDropdown.value = 2;
+    }
+
+    public void ChangeMovement()
+    {
+        PlayerPrefs.SetInt("MovementMode", movementDropdown.value);
+        if (PlayerPrefs.GetInt("MovementMode") == 0)
+        {
+            moveJoystick.SetActive(false); 
+            moveLeft.SetActive(true);
+            moveRight.SetActive(true);
+        }
+        else
+        {
+            moveJoystick.SetActive(true);
+            moveLeft.SetActive(false);
+            moveRight.SetActive(false);
+        }
     }
 }

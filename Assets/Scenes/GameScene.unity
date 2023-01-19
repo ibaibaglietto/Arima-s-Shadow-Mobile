@@ -2717,7 +2717,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &854456780
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3506,6 +3506,12 @@ MonoBehaviour:
   returnText: {fileID: 1468722858}
   eventSystem: {fileID: 247172937}
   controlls: {fileID: 165719016}
+  moveLeftButton: {fileID: 854456779}
+  moveRightButton: {fileID: 1280678450}
+  moveJoystick: {fileID: 1134811484}
+  jumpButton: {fileID: 772706684}
+  dashButton: {fileID: 2047406748}
+  pauseButton: {fileID: 916730735}
 --- !u!4 &998108951
 Transform:
   m_ObjectHideFlags: 0
@@ -3767,7 +3773,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1280678451
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3783,8 +3789,8 @@ RectTransform:
   m_Father: {fileID: 165719017}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.22739063, y: 0.143}
-  m_AnchorMax: {x: 0.22739063, y: 0.143}
+  m_AnchorMin: {x: 0.2273906, y: 0.143}
+  m_AnchorMax: {x: 0.2273906, y: 0.143}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}

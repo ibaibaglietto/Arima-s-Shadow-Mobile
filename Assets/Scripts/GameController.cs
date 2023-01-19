@@ -36,6 +36,13 @@ public class GameController : MonoBehaviour
     [SerializeField] private EventSystem eventSystem;
     //The controlls
     [SerializeField] private GameObject controlls;
+    //The movement buttons
+    [SerializeField] private GameObject moveLeftButton;
+    [SerializeField] private GameObject moveRightButton;
+    [SerializeField] private GameObject moveJoystick;
+    [SerializeField] private GameObject jumpButton;
+    [SerializeField] private GameObject dashButton;
+    [SerializeField] private GameObject pauseButton;
     //The actual active followers
     private int activeFollowers = 0;
     //The position of the last coin. The first one is the starting position
@@ -59,6 +66,31 @@ public class GameController : MonoBehaviour
         if (Mathf.Abs((float)PlayerPrefs.GetInt("resolutionW") / PlayerPrefs.GetInt("resolutionH") - 16.0f / 9.0f) < 0.0001f ) mainCamera.orthographicSize = 11.34812f;
         else if (Mathf.Abs((float)PlayerPrefs.GetInt("resolutionW") / PlayerPrefs.GetInt("resolutionH") - 16.0f / 10.0f) < 0.0001f) mainCamera.orthographicSize = 12.63513f;
         else if (Mathf.Abs((float)PlayerPrefs.GetInt("resolutionW") / PlayerPrefs.GetInt("resolutionH") - 4.0f / 3.0f) < 0.0001f) mainCamera.orthographicSize = 15.1287f;
+        //We change the visible buttons and positions depending on the control configuration
+        moveLeftButton.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("LeftButtonX"), PlayerPrefs.GetFloat("LeftButtonY"));
+        moveLeftButton.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("LeftButtonX"), PlayerPrefs.GetFloat("LeftButtonY"));
+        moveLeftButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        moveRightButton.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("RightButtonX"), PlayerPrefs.GetFloat("RightButtonY"));
+        moveRightButton.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("RightButtonX"), PlayerPrefs.GetFloat("RightButtonY"));
+        moveRightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
+        moveJoystick.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JoystickX"), PlayerPrefs.GetFloat("JoystickY"));
+        moveJoystick.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JoystickX"), PlayerPrefs.GetFloat("JoystickY"));
+        moveJoystick.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
+        jumpButton.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JumpButtonX"), PlayerPrefs.GetFloat("JumpButtonY"));
+        jumpButton.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JumpButtonX"), PlayerPrefs.GetFloat("JumpButtonY"));
+        jumpButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
+        dashButton.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("DashButtonX"), PlayerPrefs.GetFloat("DashButtonY"));
+        dashButton.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("DashButtonX"), PlayerPrefs.GetFloat("DashButtonY"));
+        dashButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
+        pauseButton.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("PauseButtonX"), PlayerPrefs.GetFloat("PauseButtonY"));
+        pauseButton.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("PauseButtonX"), PlayerPrefs.GetFloat("PauseButtonY"));
+        pauseButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
+        if (PlayerPrefs.GetInt("MovementMode") == 0) moveJoystick.SetActive(false);
+        else
+        {
+            moveLeftButton.SetActive(false);
+            moveRightButton.SetActive(false);
+        }
         //We save the starting time and initialize the variables
         startTime = Time.fixedTime;
         starting = true;
