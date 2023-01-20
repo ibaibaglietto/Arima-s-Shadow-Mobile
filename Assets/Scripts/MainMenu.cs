@@ -215,23 +215,25 @@ public class MainMenu : MonoBehaviour
         if (!PlayerPrefs.HasKey("DashButtonY")) PlayerPrefs.SetFloat("DashButtonY", 0.272f);
         if (!PlayerPrefs.HasKey("PauseButtonX")) PlayerPrefs.SetFloat("PauseButtonX", 0.9236094f);
         if (!PlayerPrefs.HasKey("PauseButtonY")) PlayerPrefs.SetFloat("PauseButtonY", 0.8933056f);
-        jump.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JumpButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JumpButtonX")) * 0.93f + 0.047f);
-        jump.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JumpButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JumpButtonX")) * 0.93f + 0.047f);
+        //jump.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JumpButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JumpButtonX")) * 0.93f + 0.047f);
+        //jump.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JumpButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JumpButtonX")) * 0.93f + 0.047f);
+        jump.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JumpButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JumpButtonY") * 0.9144895f + 0.039f);
+        jump.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JumpButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JumpButtonY") * 0.9144895f + 0.039f);
         jump.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        dash.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("DashButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("DashButtonX")) * 0.93f + 0.047f);
-        dash.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("DashButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("DashButtonX")) * 0.93f + 0.047f);
+        dash.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("DashButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("DashButtonY") * 0.9144895f + 0.039f);
+        dash.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("DashButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("DashButtonY") * 0.9144895f + 0.039f);
         dash.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        moveLeft.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("LeftButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("LeftButtonX")) * 0.93f + 0.047f);
-        moveLeft.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("LeftButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("LeftButtonX")) * 0.93f + 0.047f);
+        moveLeft.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("LeftButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("LeftButtonY") * 0.9144895f + 0.039f);
+        moveLeft.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("LeftButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("LeftButtonY") * 0.9144895f + 0.039f);
         moveLeft.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        moveRight.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("RightButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("RightButtonX")) * 0.93f + 0.047f);
-        moveRight.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("RightButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("RightButtonX")) * 0.93f + 0.047f);
+        moveRight.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("RightButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("RightButtonY") * 0.9144895f + 0.039f);
+        moveRight.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("RightButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("RightButtonY") * 0.9144895f + 0.039f);
         moveRight.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        moveJoystick.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JoystickY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JoystickX")) * 0.93f + 0.047f);
-        moveJoystick.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JoystickY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JoystickX")) * 0.93f + 0.047f);
+        moveJoystick.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JoystickX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JoystickY") * 0.9144895f + 0.039f);
+        moveJoystick.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JoystickX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JoystickY") * 0.9144895f + 0.039f);
         moveJoystick.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        pause.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("PauseButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("PauseButtonX")) * 0.93f + 0.047f);
-        pause.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("PauseButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("PauseButtonX")) * 0.93f + 0.047f);
+        pause.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("PauseButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("PauseButtonY") * 0.9144895f + 0.039f);
+        pause.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("PauseButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("PauseButtonY") * 0.9144895f + 0.039f);
         pause.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
         if (PlayerPrefs.GetInt("MovementMode") == 0) moveJoystick.SetActive(false);
         else
@@ -281,7 +283,6 @@ public class MainMenu : MonoBehaviour
         if(changingButtonPos != 0)
         {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), Input.mousePosition, GetComponent<Canvas>().worldCamera, out newButtonPos);
-            Debug.Log(newButtonPos);
             if (changingButtonPos == 4)
             {
                 jump.transform.position = GetComponent<Transform>().TransformPoint(newButtonPos);
@@ -291,7 +292,10 @@ public class MainMenu : MonoBehaviour
                     newButtonPos = new Vector2(jump.GetComponent<RectTransform>().anchoredPosition.x / jump.transform.parent.GetComponent<RectTransform>().rect.width, jump.GetComponent<RectTransform>().anchoredPosition.y / jump.transform.parent.GetComponent<RectTransform>().rect.height);
                     jump.GetComponent<RectTransform>().anchorMin = newButtonPos;
                     jump.GetComponent<RectTransform>().anchorMax = newButtonPos;
+                    Debug.Log(newButtonPos);
                     jump.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, 0.0f);
+                    PlayerPrefs.SetFloat("JumpButtonX", (newButtonPos.x - 0.021f) / 0.9314612f);
+                    PlayerPrefs.SetFloat("JumpButtonY", (newButtonPos.y - 0.039f) / 0.9144895f);
                 }
             }            
         }
