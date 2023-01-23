@@ -92,6 +92,7 @@ public class MainMenu : MonoBehaviour
     private GameObject jump;
     private GameObject dash;
     private GameObject pause;
+    private GameObject buttonPos;
     //The music source
     private AudioSource musicSource;
     //The language dropdowns
@@ -105,6 +106,8 @@ public class MainMenu : MonoBehaviour
     private int changingButtonPos = 0;
     //A vector 2 to know the new position of the button
     private Vector2 newButtonPos;
+    private float newX;
+    private float newY;
 
     void Start()
     {
@@ -160,6 +163,7 @@ public class MainMenu : MonoBehaviour
         jump = GameObject.Find("Jump");
         dash = GameObject.Find("Dash");
         pause = GameObject.Find("Pause");
+        buttonPos = GameObject.Find("ButtonPos");
         howToPlayPrevButton = GameObject.Find("HowToPlayPrev").GetComponent<Button>();
         howToPlayNextButton = GameObject.Find("HowToPlayNext").GetComponent<Button>();
         musicSource = GameObject.Find("MusicSource").GetComponent<AudioSource>();
@@ -215,8 +219,6 @@ public class MainMenu : MonoBehaviour
         if (!PlayerPrefs.HasKey("DashButtonY")) PlayerPrefs.SetFloat("DashButtonY", 0.272f);
         if (!PlayerPrefs.HasKey("PauseButtonX")) PlayerPrefs.SetFloat("PauseButtonX", 0.9236094f);
         if (!PlayerPrefs.HasKey("PauseButtonY")) PlayerPrefs.SetFloat("PauseButtonY", 0.8933056f);
-        //jump.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JumpButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JumpButtonX")) * 0.93f + 0.047f);
-        //jump.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JumpButtonY") * 0.91232f + 0.04168f, (1.0f - PlayerPrefs.GetFloat("JumpButtonX")) * 0.93f + 0.047f);
         jump.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JumpButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JumpButtonY") * 0.9144895f + 0.039f);
         jump.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JumpButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JumpButtonY") * 0.9144895f + 0.039f);
         jump.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
@@ -285,7 +287,15 @@ public class MainMenu : MonoBehaviour
             RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), Input.mousePosition, GetComponent<Canvas>().worldCamera, out newButtonPos);
             if (changingButtonPos == 4)
             {
-                jump.transform.position = GetComponent<Transform>().TransformPoint(newButtonPos);
+                buttonPos.transform.position = GetComponent<Transform>().TransformPoint(newButtonPos);
+                Debug.Log(buttonPos.GetComponent<RectTransform>().anchoredPosition);
+                if (buttonPos.GetComponent<RectTransform>().anchoredPosition.x > 1676.0f) newX = 1676.0f;
+                else if (buttonPos.GetComponent<RectTransform>().anchoredPosition.x < 130.0f) newX = 130.0f;
+                else newX = buttonPos.GetComponent<RectTransform>().anchoredPosition.x;
+                if (buttonPos.GetComponent<RectTransform>().anchoredPosition.y < 124.0f) newY = 124.0f;
+                else if (buttonPos.GetComponent<RectTransform>().anchoredPosition.y > 723.0f) newY = 723.0f;
+                else newY = buttonPos.GetComponent<RectTransform>().anchoredPosition.y;
+                jump.GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY);
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
                     changingButtonPos = 0;
