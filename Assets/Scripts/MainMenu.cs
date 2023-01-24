@@ -85,14 +85,11 @@ public class MainMenu : MonoBehaviour
     private TextMeshProUGUI howToPlayPage4;
     private TextMeshProUGUI howToPlayPage5;
     private TextMeshProUGUI howToPlayPage6;
-    //The gameobjects of the buttons
-    private GameObject moveLeft;
-    private GameObject moveRight;
-    private GameObject moveJoystick;
-    private GameObject jump;
-    private GameObject dash;
-    private GameObject pause;
+    //The gameobjects of the buttons(0-> moveLeft, 1-> moveRight, 2-> joystick, 3-> jump, 4-> dash, 5-> pause)
+    private GameObject[] buttons;
     private GameObject buttonPos;
+    //An array to know the positions of the buttons
+    private Vector2[] buttonsAnchoredPos;
     //The music source
     private AudioSource musicSource;
     //The language dropdowns
@@ -157,12 +154,7 @@ public class MainMenu : MonoBehaviour
         howToPlayPage4 = GameObject.Find("Page4Text").GetComponent<TextMeshProUGUI>();
         howToPlayPage5 = GameObject.Find("Page5Text").GetComponent<TextMeshProUGUI>();
         howToPlayPage6 = GameObject.Find("Page6Text").GetComponent<TextMeshProUGUI>();
-        moveLeft = GameObject.Find("LeftArrow");
-        moveRight = GameObject.Find("RightArrow");
-        moveJoystick = GameObject.Find("Joystick");
-        jump = GameObject.Find("Jump");
-        dash = GameObject.Find("Dash");
-        pause = GameObject.Find("Pause");
+        buttons = new[] { GameObject.Find("LeftArrow"), GameObject.Find("RightArrow"), GameObject.Find("Joystick"), GameObject.Find("Jump"), GameObject.Find("Dash"), GameObject.Find("Pause")};
         buttonPos = GameObject.Find("ButtonPos");
         howToPlayPrevButton = GameObject.Find("HowToPlayPrev").GetComponent<Button>();
         howToPlayNextButton = GameObject.Find("HowToPlayNext").GetComponent<Button>();
@@ -218,30 +210,35 @@ public class MainMenu : MonoBehaviour
         if (!PlayerPrefs.HasKey("DashButtonX")) PlayerPrefs.SetFloat("DashButtonX", 0.9236094f);
         if (!PlayerPrefs.HasKey("DashButtonY")) PlayerPrefs.SetFloat("DashButtonY", 0.272f);
         if (!PlayerPrefs.HasKey("PauseButtonX")) PlayerPrefs.SetFloat("PauseButtonX", 0.9236094f);
-        if (!PlayerPrefs.HasKey("PauseButtonY")) PlayerPrefs.SetFloat("PauseButtonY", 0.8933056f);
-        jump.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JumpButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JumpButtonY") * 0.9144895f + 0.039f);
-        jump.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JumpButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JumpButtonY") * 0.9144895f + 0.039f);
-        jump.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        dash.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("DashButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("DashButtonY") * 0.9144895f + 0.039f);
-        dash.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("DashButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("DashButtonY") * 0.9144895f + 0.039f);
-        dash.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        moveLeft.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("LeftButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("LeftButtonY") * 0.9144895f + 0.039f);
-        moveLeft.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("LeftButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("LeftButtonY") * 0.9144895f + 0.039f);
-        moveLeft.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        moveRight.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("RightButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("RightButtonY") * 0.9144895f + 0.039f);
-        moveRight.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("RightButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("RightButtonY") * 0.9144895f + 0.039f);
-        moveRight.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        moveJoystick.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JoystickX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JoystickY") * 0.9144895f + 0.039f);
-        moveJoystick.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JoystickX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JoystickY") * 0.9144895f + 0.039f);
-        moveJoystick.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        pause.GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("PauseButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("PauseButtonY") * 0.9144895f + 0.039f);
-        pause.GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("PauseButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("PauseButtonY") * 0.9144895f + 0.039f);
-        pause.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-        if (PlayerPrefs.GetInt("MovementMode") == 0) moveJoystick.SetActive(false);
+        if (!PlayerPrefs.HasKey("PauseButtonY")) PlayerPrefs.SetFloat("PauseButtonY", 0.8933056f);  
+        buttons[0].GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("LeftButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("LeftButtonY") * 0.9144895f + 0.039f);
+        buttons[0].GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("LeftButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("LeftButtonY") * 0.9144895f + 0.039f);
+        buttons[0].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        buttons[1].GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("RightButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("RightButtonY") * 0.9144895f + 0.039f);
+        buttons[1].GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("RightButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("RightButtonY") * 0.9144895f + 0.039f);
+        buttons[1].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        buttons[2].GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JoystickX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JoystickY") * 0.9144895f + 0.039f);
+        buttons[2].GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JoystickX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JoystickY") * 0.9144895f + 0.039f);
+        buttons[2].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        buttons[3].GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("JumpButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JumpButtonY") * 0.9144895f + 0.039f);
+        buttons[3].GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("JumpButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("JumpButtonY") * 0.9144895f + 0.039f);
+        buttons[3].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        buttons[4].GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("DashButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("DashButtonY") * 0.9144895f + 0.039f);
+        buttons[4].GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("DashButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("DashButtonY") * 0.9144895f + 0.039f);
+        buttons[4].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);        
+        buttons[5].GetComponent<RectTransform>().anchorMin = new Vector2(PlayerPrefs.GetFloat("PauseButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("PauseButtonY") * 0.9144895f + 0.039f);
+        buttons[5].GetComponent<RectTransform>().anchorMax = new Vector2(PlayerPrefs.GetFloat("PauseButtonX") * 0.9314612f + 0.021f, PlayerPrefs.GetFloat("PauseButtonY") * 0.9144895f + 0.039f);
+        buttons[5].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        buttonsAnchoredPos = new[] { Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero };
+        for (int i = 0; i < 6; i++)
+        {
+            buttonsAnchoredPos[i] = new Vector2(buttons[i].GetComponent<RectTransform>().anchorMin.x * 1856.0f, buttons[i].GetComponent<RectTransform>().anchorMin.y * 855.0f);
+        }
+        if (PlayerPrefs.GetInt("MovementMode") == 0) buttons[2].SetActive(false);
         else
         {
-            moveLeft.SetActive(false);
-            moveRight.SetActive(false);
+            buttons[0].SetActive(false);
+            buttons[1].SetActive(false);
         }
         //We put the real value on the sliders
         masterSlider.value = PlayerPrefs.GetFloat("masterAudio");
@@ -287,25 +284,101 @@ public class MainMenu : MonoBehaviour
             RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), Input.mousePosition, GetComponent<Canvas>().worldCamera, out newButtonPos);
             if (changingButtonPos == 4)
             {
+                Vector2 tempPos;
+                int limitX;
+                int limitY;
                 buttonPos.transform.position = GetComponent<Transform>().TransformPoint(newButtonPos);
-                Debug.Log(buttonPos.GetComponent<RectTransform>().anchoredPosition);
-                if (buttonPos.GetComponent<RectTransform>().anchoredPosition.x > 1676.0f) newX = 1676.0f;
-                else if (buttonPos.GetComponent<RectTransform>().anchoredPosition.x < 130.0f) newX = 130.0f;
-                else newX = buttonPos.GetComponent<RectTransform>().anchoredPosition.x;
-                if (buttonPos.GetComponent<RectTransform>().anchoredPosition.y < 124.0f) newY = 124.0f;
-                else if (buttonPos.GetComponent<RectTransform>().anchoredPosition.y > 723.0f) newY = 723.0f;
-                else newY = buttonPos.GetComponent<RectTransform>().anchoredPosition.y;
-                jump.GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY);
+                if (buttonPos.GetComponent<RectTransform>().anchoredPosition.x > 1676.0f)
+                {
+                    newX = 1676.0f;
+                    limitX = 2;
+                }
+                else if (buttonPos.GetComponent<RectTransform>().anchoredPosition.x < 130.0f)
+                {
+                    newX = 130.0f;
+                    limitX = 1;
+                }
+                else
+                {
+                    newX = buttonPos.GetComponent<RectTransform>().anchoredPosition.x;
+                    limitX = 0;
+                }
+                if (buttonPos.GetComponent<RectTransform>().anchoredPosition.y < 124.0f)
+                {
+                    newY = 124.0f;
+                    limitY = 1;
+                }
+                else if (buttonPos.GetComponent<RectTransform>().anchoredPosition.y > 723.0f)
+                {
+                    newY = 723.0f;
+                    limitY = 2;
+                }
+                else
+                {
+                    newY = buttonPos.GetComponent<RectTransform>().anchoredPosition.y;
+                    limitY = 0;
+                }
+                tempPos = new Vector2(newX, newY);
+                int i=0;
+                bool found = false;
+                while(i<6 && !found)
+                {
+                    if (i != changingButtonPos - 1 && i!=2)
+                    {
+                        if ((buttonsAnchoredPos[i] - tempPos).magnitude < 181.0f)
+                            found = true;
+                        else i++;
+                    }
+                    else i++;
+                }
+                if (found)
+                {
+                    float px = tempPos.x - buttonsAnchoredPos[i].x;
+                    float py = tempPos.y - buttonsAnchoredPos[i].y;
+                    if (limitX == 0 && limitY == 0)
+                    {
+                        Debug.Log(Mathf.Sin(Mathf.Atan2(py, px)));
+                        Debug.Log(Mathf.Cos(Mathf.Atan2(py, px)));
+                        buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(181.0f * Mathf.Cos(Mathf.Atan2(py, px)) + buttonsAnchoredPos[i].x, 181.0f * Mathf.Sin(Mathf.Atan2(py, px)) + buttonsAnchoredPos[i].y);
+                    }
+                    else if(limitX != 0)
+                    {
+                        if(limitX == 1) newX = 130.0f;
+                        else newX = 1676.0f;
+                        newY = (2* buttonsAnchoredPos[i].y + (py/Mathf.Abs(py)) * Mathf.Sqrt(Mathf.Pow(2* buttonsAnchoredPos[i].y,2)-4.0f*(-(Mathf.Pow(181.0f,2))+ Mathf.Pow(tempPos.x - buttonsAnchoredPos[i].x, 2)+ Mathf.Pow(buttonsAnchoredPos[i].y, 2)))) /2.0f;
+                        buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY);
+                    }
+                    else if(limitY != 0)
+                    {
+                        if (limitY == 1) newY = 124.0f;
+                        else newY = 723.0f;
+                        newX = (2 * buttonsAnchoredPos[i].x + (px / Mathf.Abs(px)) * Mathf.Sqrt(Mathf.Pow(2 * buttonsAnchoredPos[i].x, 2) - 4.0f * (-(Mathf.Pow(181.0f, 2)) + Mathf.Pow(tempPos.y - buttonsAnchoredPos[i].y, 2) + Mathf.Pow(buttonsAnchoredPos[i].x, 2)))) / 2.0f;
+                        buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY);
+                    }
+                    //Debug.Log(new Vector2(px,py));
+                    //if(Mathf.Abs(buttonsAnchoredPos[i].x - tempPos.x)>= Mathf.Abs(buttonsAnchoredPos[i].y - tempPos.y))
+                    //{
+                    //    buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(buttonsAnchoredPos[i].x + (181.0f- Mathf.Abs(buttonsAnchoredPos[i].y - tempPos.y)), tempPos.y);
+                    //}
+                    //else buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(tempPos.x, buttonsAnchoredPos[i].y + (181.0f - Mathf.Abs(buttonsAnchoredPos[i].x - tempPos.x)));
+                }
+                else buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = tempPos;
+                //buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = tempPos;
+                //Debug.Log(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition);
+                //Debug.Log(buttonsAnchoredPos[4]);
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
-                    changingButtonPos = 0;
-                    newButtonPos = new Vector2(jump.GetComponent<RectTransform>().anchoredPosition.x / jump.transform.parent.GetComponent<RectTransform>().rect.width, jump.GetComponent<RectTransform>().anchoredPosition.y / jump.transform.parent.GetComponent<RectTransform>().rect.height);
-                    jump.GetComponent<RectTransform>().anchorMin = newButtonPos;
-                    jump.GetComponent<RectTransform>().anchorMax = newButtonPos;
-                    Debug.Log(newButtonPos);
-                    jump.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, 0.0f);
+                    Debug.Log(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition);
+                    newButtonPos = new Vector2(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.x / buttons[changingButtonPos - 1].transform.parent.GetComponent<RectTransform>().rect.width, buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.y / buttons[changingButtonPos - 1].transform.parent.GetComponent<RectTransform>().rect.height);
+                    buttons[changingButtonPos-1].GetComponent<RectTransform>().anchorMin = newButtonPos;
+                    buttons[changingButtonPos-1].GetComponent<RectTransform>().anchorMax = newButtonPos;
+                    buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, 0.0f);
                     PlayerPrefs.SetFloat("JumpButtonX", (newButtonPos.x - 0.021f) / 0.9314612f);
                     PlayerPrefs.SetFloat("JumpButtonY", (newButtonPos.y - 0.039f) / 0.9144895f);
+                    buttonsAnchoredPos[changingButtonPos - 1] = new Vector2(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.x * 1856.0f, buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.y * 855.0f);
+                    Debug.Log(buttons[changingButtonPos-1].GetComponent<RectTransform>().anchorMin.x * 1856.0f);
+                    Debug.Log(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.y * 855.0f);
+                    changingButtonPos = 0;
                 }
             }            
         }
@@ -564,8 +637,8 @@ public class MainMenu : MonoBehaviour
     public void StartChangeButtonPos(int i)
     {
         changingButtonPos = i;
-        jump.GetComponent<RectTransform>().anchorMin = new Vector2(0.0f,0.0f);
-        jump.GetComponent<RectTransform>().anchorMax = new Vector2(0.0f, 0.0f);
+        buttons[changingButtonPos-1].GetComponent<RectTransform>().anchorMin = new Vector2(0.0f,0.0f);
+        buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMax = new Vector2(0.0f, 0.0f);
     }
 
     //Function to open the credits menu
@@ -634,15 +707,15 @@ public class MainMenu : MonoBehaviour
         PlayerPrefs.SetInt("MovementMode", movementDropdown.value);
         if (PlayerPrefs.GetInt("MovementMode") == 0)
         {
-            moveJoystick.SetActive(false); 
-            moveLeft.SetActive(true);
-            moveRight.SetActive(true);
+            buttons[2].SetActive(false);
+            buttons[0].SetActive(true);
+            buttons[1].SetActive(true);
         }
         else
         {
-            moveJoystick.SetActive(true);
-            moveLeft.SetActive(false);
-            moveRight.SetActive(false);
+            buttons[2].SetActive(true);
+            buttons[0].SetActive(false);
+            buttons[1].SetActive(false);
         }
     }
 }
