@@ -105,6 +105,9 @@ public class MainMenu : MonoBehaviour
     private Vector2 newButtonPos;
     private float newX;
     private float newY;
+    //A matrix to know what buttons have another button in less than 362
+    private int[][] neighbour;
+    private int[] neighbourNumb;
 
     void Start()
     {
@@ -240,6 +243,9 @@ public class MainMenu : MonoBehaviour
             buttons[0].SetActive(false);
             buttons[1].SetActive(false);
         }
+        CalculateNeighbours(out neighbour, out neighbourNumb);
+
+        for (int i = 0; i < 6; i++) Debug.Log(neighbourNumb[i]);
         //We put the real value on the sliders
         masterSlider.value = PlayerPrefs.GetFloat("masterAudio");
         musicSlider.value = PlayerPrefs.GetFloat("musicAudio");
@@ -323,7 +329,7 @@ public class MainMenu : MonoBehaviour
                 bool found = false;
                 while(i<6 && !found)
                 {
-                    if (i != changingButtonPos - 1 && i!=2)
+                    if (i != changingButtonPos - 1 && !(i == 2  && PlayerPrefs.GetInt("MovementMode") == 0) && !((i == 0  || i == 1 ) && PlayerPrefs.GetInt("MovementMode") == 1))
                     {
                         if ((buttonsAnchoredPos[i] - tempPos).magnitude < 181.0f)
                             found = true;
@@ -335,24 +341,52 @@ public class MainMenu : MonoBehaviour
                 {
                     float px = tempPos.x - buttonsAnchoredPos[i].x;
                     float py = tempPos.y - buttonsAnchoredPos[i].y;
+                    float side;
                     if (limitX == 0 && limitY == 0)
                     {
-                        Debug.Log(Mathf.Sin(Mathf.Atan2(py, px)));
-                        Debug.Log(Mathf.Cos(Mathf.Atan2(py, px)));
                         buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(181.0f * Mathf.Cos(Mathf.Atan2(py, px)) + buttonsAnchoredPos[i].x, 181.0f * Mathf.Sin(Mathf.Atan2(py, px)) + buttonsAnchoredPos[i].y);
+                        if (buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.x > 1676.0f)
+                        {
+                            newX = 1676.0f;
+                            limitX = 2;
+                        }
+                        else if (buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.x < 130.0f)
+                        {
+                            newX = 130.0f;
+                            limitX = 1;
+                        }
+                        else newX = tempPos.x;
+                        if (buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.y < 124.0f)
+                        {
+                            newY = 124.0f;
+                            limitY = 1;
+                        }
+                        else if (buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.y > 723.0f)
+                        {
+                            newY = 723.0f;
+                            limitY = 2;
+                        }
+                        else newY = tempPos.y;
+                        tempPos = new Vector2(newX, newY);
                     }
-                    else if(limitX != 0)
+                    if(limitX != 0)
                     {
                         if(limitX == 1) newX = 130.0f;
                         else newX = 1676.0f;
-                        newY = (2* buttonsAnchoredPos[i].y + (py/Mathf.Abs(py)) * Mathf.Sqrt(Mathf.Pow(2* buttonsAnchoredPos[i].y,2)-4.0f*(-(Mathf.Pow(181.0f,2))+ Mathf.Pow(tempPos.x - buttonsAnchoredPos[i].x, 2)+ Mathf.Pow(buttonsAnchoredPos[i].y, 2)))) /2.0f;
+                        if (buttonsAnchoredPos[i].y + 181.0f > 723.0f) side = -1;
+                        else if (buttonsAnchoredPos[i].y - 181.0f < 124.0f) side = 1;
+                        else side = py / Mathf.Abs(py);
+                        newY = (2* buttonsAnchoredPos[i].y + side * Mathf.Sqrt(Mathf.Pow(2* buttonsAnchoredPos[i].y,2)-4.0f*(-(Mathf.Pow(181.0f,2))+ Mathf.Pow(tempPos.x - buttonsAnchoredPos[i].x, 2)+ Mathf.Pow(buttonsAnchoredPos[i].y, 2)))) /2.0f;
                         buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY);
                     }
                     else if(limitY != 0)
                     {
                         if (limitY == 1) newY = 124.0f;
                         else newY = 723.0f;
-                        newX = (2 * buttonsAnchoredPos[i].x + (px / Mathf.Abs(px)) * Mathf.Sqrt(Mathf.Pow(2 * buttonsAnchoredPos[i].x, 2) - 4.0f * (-(Mathf.Pow(181.0f, 2)) + Mathf.Pow(tempPos.y - buttonsAnchoredPos[i].y, 2) + Mathf.Pow(buttonsAnchoredPos[i].x, 2)))) / 2.0f;
+                        if (buttonsAnchoredPos[i].x + 181.0f > 1676.0f) side = -1;
+                        else if (buttonsAnchoredPos[i].x - 181.0f < 130.0f) side = 1;
+                        else side = px / Mathf.Abs(px);
+                        newX = (2 * buttonsAnchoredPos[i].x + side * Mathf.Sqrt(Mathf.Pow(2 * buttonsAnchoredPos[i].x, 2) - 4.0f * (-(Mathf.Pow(181.0f, 2)) + Mathf.Pow(tempPos.y - buttonsAnchoredPos[i].y, 2) + Mathf.Pow(buttonsAnchoredPos[i].x, 2)))) / 2.0f;
                         buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY);
                     }
                     //Debug.Log(new Vector2(px,py));
@@ -368,7 +402,6 @@ public class MainMenu : MonoBehaviour
                 //Debug.Log(buttonsAnchoredPos[4]);
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
-                    Debug.Log(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition);
                     newButtonPos = new Vector2(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.x / buttons[changingButtonPos - 1].transform.parent.GetComponent<RectTransform>().rect.width, buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.y / buttons[changingButtonPos - 1].transform.parent.GetComponent<RectTransform>().rect.height);
                     buttons[changingButtonPos-1].GetComponent<RectTransform>().anchorMin = newButtonPos;
                     buttons[changingButtonPos-1].GetComponent<RectTransform>().anchorMax = newButtonPos;
@@ -376,8 +409,6 @@ public class MainMenu : MonoBehaviour
                     PlayerPrefs.SetFloat("JumpButtonX", (newButtonPos.x - 0.021f) / 0.9314612f);
                     PlayerPrefs.SetFloat("JumpButtonY", (newButtonPos.y - 0.039f) / 0.9144895f);
                     buttonsAnchoredPos[changingButtonPos - 1] = new Vector2(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.x * 1856.0f, buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.y * 855.0f);
-                    Debug.Log(buttons[changingButtonPos-1].GetComponent<RectTransform>().anchorMin.x * 1856.0f);
-                    Debug.Log(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.y * 855.0f);
                     changingButtonPos = 0;
                 }
             }            
@@ -398,6 +429,31 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+
+    public void CalculateNeighbours(out int[][] n , out int[] nN )
+    {
+        int j = 0;
+        n = new[] { new[] { 0, 0, 0, 0, 0, 0 }, new[] { 0, 0, 0, 0, 0, 0 }, new[] { 0, 0, 0, 0, 0, 0 }, new[] { 0, 0, 0, 0, 0, 0 }, new[] { 0, 0, 0, 0, 0, 0 }, new[] { 0, 0, 0, 0, 0, 0 } };
+        nN = new[] { 0, 0, 0, 0, 0, 0 };
+        for (int i = 0; i < 6; i++)
+        {
+            while (j < 6)
+            {
+                if (((buttonsAnchoredPos[i] - buttonsAnchoredPos[j]).magnitude < 362.0f) && !((i==2 || j==2) && PlayerPrefs.GetInt("MovementMode") == 0) && !(((i==0 || j==0)||(i==1 || j==1)) && PlayerPrefs.GetInt("MovementMode") == 1))
+                {
+                    n[i][j] = 1;
+                    nN[i]++;
+                    if (i != j)
+                    {
+                        n[j][i] = 1;
+                        nN[j]++;
+                    }
+                }
+                j++;
+            }
+            j = i + 1;
+        }
+    }
     //Function to close the game
     public void CloseGame()
     {
