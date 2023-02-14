@@ -206,18 +206,14 @@ public class MainMenu : MonoBehaviour
         if (!PlayerPrefs.HasKey("LeftButtonY")) PlayerPrefs.SetFloat("LeftButtonY", 0.143f);
         if (!PlayerPrefs.HasKey("RightButtonX")) PlayerPrefs.SetFloat("RightButtonX", 0.2273906f);
         if (!PlayerPrefs.HasKey("RightButtonY")) PlayerPrefs.SetFloat("RightButtonY", 0.143f);
-        PlayerPrefs.SetFloat("LeftButtonX", 0.08f);
-        PlayerPrefs.SetFloat("LeftButtonY", 0.143f);
-        PlayerPrefs.SetFloat("RightButtonX", 0.18f);
-        PlayerPrefs.SetFloat("RightButtonY", 0.4f);
-        PlayerPrefs.SetFloat("DashButtonX", 0.9236094f);
-        PlayerPrefs.SetFloat("DashButtonY", 0.272f);
-        PlayerPrefs.SetFloat("PauseButtonX", 0.9236094f);
-        PlayerPrefs.SetFloat("PauseButtonY", 0.8933056f);
-        //PlayerPrefs.SetFloat("LeftButtonX", 0.26f);
-        //PlayerPrefs.SetFloat("LeftButtonY", 0.24f);
-        //PlayerPrefs.SetFloat("RightButtonX", 0.26f);
-        //PlayerPrefs.SetFloat("RightButtonY", 0.5f);
+        PlayerPrefs.SetFloat("DashButtonX", 0.9f);
+        PlayerPrefs.SetFloat("DashButtonY", 0.15f);
+        PlayerPrefs.SetFloat("PauseButtonX", 0.77f);
+        PlayerPrefs.SetFloat("PauseButtonY", 0.42f);
+        PlayerPrefs.SetFloat("LeftButtonX", 0.6f);
+        PlayerPrefs.SetFloat("LeftButtonY", 0.15f);
+        PlayerPrefs.SetFloat("RightButtonX", 0.75f);
+        PlayerPrefs.SetFloat("RightButtonY", 0.15f);
         if (!PlayerPrefs.HasKey("JoystickX")) PlayerPrefs.SetFloat("JoystickX", 0.1174375f);
         if (!PlayerPrefs.HasKey("JoystickY")) PlayerPrefs.SetFloat("JoystickY", 0.2088333f);
         if (!PlayerPrefs.HasKey("JumpButtonX")) PlayerPrefs.SetFloat("JumpButtonX", 0.7942656f);
@@ -436,37 +432,292 @@ public class MainMenu : MonoBehaviour
                                 left = buttonsAnchoredPos[i];
                                 right = buttonsAnchoredPos[k];
                             }
-                            else
+                            else if (buttonsAnchoredPos[k].x < buttonsAnchoredPos[i].x)
                             {
                                 right = buttonsAnchoredPos[i];
                                 left = buttonsAnchoredPos[k];
                             }
+                            else if(buttonsAnchoredPos[k].y > buttonsAnchoredPos[i].y)
+                            {
+                                right = buttonsAnchoredPos[k];
+                                left = buttonsAnchoredPos[i];
+                            }
+                            else
+                            {
+                                left = buttonsAnchoredPos[k];
+                                right = buttonsAnchoredPos[i];
+                            }
                             Vector2 p;
-                            if (buttonsAnchoredPos[k].x > buttonsAnchoredPos[i].x) p = Vector2.Perpendicular((buttonsAnchoredPos[k] - buttonsAnchoredPos[i]).normalized);
-                            else p = Vector2.Perpendicular((buttonsAnchoredPos[i] - buttonsAnchoredPos[k]).normalized);
+                            //if (buttonsAnchoredPos[k].x > buttonsAnchoredPos[i].x) p = Vector2.Perpendicular((buttonsAnchoredPos[k] - buttonsAnchoredPos[i]).normalized);
+                            //else p = Vector2.Perpendicular((buttonsAnchoredPos[i] - buttonsAnchoredPos[k]).normalized);
+                            p = Vector2.Perpendicular((right - left).normalized);
                             float diff = (buttonsAnchoredPos[k] - buttonsAnchoredPos[i]).magnitude;
                             if (neighbourBlockCuant == 0)
                             {
-                                if (buttonsAnchoredPos[i].y + 181.0f > 723.0f || buttonsAnchoredPos[i].x + 181.0f > 1676.0f) side = -1;
-                                else if (buttonsAnchoredPos[i].y - 181.0f < 124.0f || buttonsAnchoredPos[i].x - 181.0f < 130.0f) side = 1;
+                                newX = (buttonsAnchoredPos[k].x + buttonsAnchoredPos[i].x) / 2;
+                                newY = (buttonsAnchoredPos[k].y + buttonsAnchoredPos[i].y) / 2;
+                                Vector2 positive = new Vector2(newX, newY) + 1.0f * Mathf.Sqrt(Mathf.Pow(181.0f, 2) - Mathf.Pow(diff / 2, 2)) * p;
+                                Vector2 negative = new Vector2(newX, newY) - 1.0f * Mathf.Sqrt(Mathf.Pow(181.0f, 2) - Mathf.Pow(diff / 2, 2)) * p;
+                                //Debug.Log(negative.x);
+                                //Debug.Log(negative.y);
+                                //Debug.Log(positive.x);
+                                //Debug.Log(positive.y);
+                                if (positive.y > 723.0f || positive.x < 130.0f)
+                                {
+                                    //Debug.Log("a");
+                                    side = -1;
+                                }
+                                else if (negative.y < 124.0f || negative.x > 1676.0f)
+                                {
+                                    //Debug.Log("b");
+                                    side = 1;
+                                }
+                                //if (buttonsAnchoredPos[i].y + 181.0f > 723.0f || buttonsAnchoredPos[i].x + 181.0f > 1676.0f) side = -1;
+                                //else if (buttonsAnchoredPos[i].y - 181.0f < 124.0f || buttonsAnchoredPos[i].x - 181.0f < 130.0f) side = 1;
                                 else
-                                {                                    
+                                {
+                                    //Debug.Log("c");
                                     if (((right.x - left.x) * (buttonPos.GetComponent<RectTransform>().anchoredPosition.y - left.y) - (right.y - left.y) * (buttonPos.GetComponent<RectTransform>().anchoredPosition.x - left.x)) > 0)
                                         side = 1;
                                     else side = -1;
                                 }
-                                newX = (buttonsAnchoredPos[k].x + buttonsAnchoredPos[i].x) / 2;
-                                newY = (buttonsAnchoredPos[k].y + buttonsAnchoredPos[i].y) / 2;
-                                buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY) + side * Mathf.Sqrt(Mathf.Pow(181.0f, 2) - Mathf.Pow(diff / 2, 2)) * p;
+                                if(side ==1) buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = positive;
+                                else buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = negative;
                             }
                             else if (neighbourBlockCuant == 1)
                             {
+                                //Debug.Log("ola");
                                 if (((right.x - left.x) * (buttonsAnchoredPos[neighbourBlockNumb[0]].y - left.y) - (right.y - left.y) * (buttonsAnchoredPos[neighbourBlockNumb[0]].x - left.x)) > 0)
                                     side = -1;
                                 else side = 1;
                                 newX = (buttonsAnchoredPos[k].x + buttonsAnchoredPos[i].x) / 2;
                                 newY = (buttonsAnchoredPos[k].y + buttonsAnchoredPos[i].y) / 2;
-                                buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY) + side * Mathf.Sqrt(Mathf.Pow(181.0f, 2) - Mathf.Pow(diff / 2, 2)) * p;
+                                tempPos = new Vector2(newX, newY) + side * Mathf.Sqrt(Mathf.Pow(181.0f, 2) - Mathf.Pow(diff / 2, 2)) * p;
+                                if (tempPos.x > 1676.0f)
+                                {
+                                    newX = 1676.0f;
+                                    limitX = 2;
+                                }
+                                else if (tempPos.x < 130.0f)
+                                {
+                                    newX = 130.0f;
+                                    limitX = 1;
+                                }
+                                else
+                                {
+                                    newX = tempPos.x;
+                                    limitX = 0;
+                                }
+                                if (tempPos.y < 124.0f)
+                                {
+                                    newY = 124.0f;
+                                    limitY = 1;
+                                }
+                                else if (tempPos.y > 723.0f)
+                                {
+                                    newY = 723.0f;
+                                    limitY = 2;
+                                }
+                                else
+                                {
+                                    newY = tempPos.y;
+                                    limitY = 0;
+                                }
+                                if(limitX==0 && limitY==0) buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = tempPos;
+                                else
+                                {
+                                    if (limitX != 0)
+                                    {
+                                        if (limitX == 1) newX = 130.0f;
+                                        else newX = 1676.0f;
+                                        if (buttonsAnchoredPos[i].y + 181.0f > 723.0f) side = -1;
+                                        else if (buttonsAnchoredPos[i].y - 181.0f < 124.0f) side = 1;
+                                        else side = py / Mathf.Abs(py);
+                                        newY = (2 * buttonsAnchoredPos[i].y + side * Mathf.Sqrt(Mathf.Pow(2 * buttonsAnchoredPos[i].y, 2) - 4.0f * (-(Mathf.Pow(181.0f, 2)) + Mathf.Pow(newX - buttonsAnchoredPos[i].x, 2) + Mathf.Pow(buttonsAnchoredPos[i].y, 2)))) / 2.0f;
+                                        tempPos = new Vector2(newX, newY);
+                                        if ((tempPos - buttonsAnchoredPos[k]).magnitude < 181.0f || (tempPos - buttonsAnchoredPos[i]).magnitude < 181.0f) side = -side;
+                                        newY = (2 * buttonsAnchoredPos[i].y + side * Mathf.Sqrt(Mathf.Pow(2 * buttonsAnchoredPos[i].y, 2) - 4.0f * (-(Mathf.Pow(181.0f, 2)) + Mathf.Pow(newX - buttonsAnchoredPos[i].x, 2) + Mathf.Pow(buttonsAnchoredPos[i].y, 2)))) / 2.0f;
+                                        tempPos = new Vector2(newX, newY);
+                                        k = -1;
+                                        for (int j = 0; j < 6; j++)
+                                        {
+                                            if (i != j && neighbour[i][j] != 0)
+                                            {
+                                                if ((j != changingButtonPos - 1) && (tempPos - buttonsAnchoredPos[j]).magnitude < 181.0f)
+                                                {
+                                                    k = j;
+                                                }
+                                            }
+                                        }
+                                        if (k != -1)
+                                        {
+                                            if (buttonsAnchoredPos[k].x > buttonsAnchoredPos[i].x)
+                                            {
+                                                left = buttonsAnchoredPos[i];
+                                                right = buttonsAnchoredPos[k];
+                                            }
+                                            else if (buttonsAnchoredPos[k].x < buttonsAnchoredPos[i].x)
+                                            {
+                                                right = buttonsAnchoredPos[i];
+                                                left = buttonsAnchoredPos[k];
+                                            }
+                                            else if (buttonsAnchoredPos[k].y > buttonsAnchoredPos[i].y)
+                                            {
+                                                right = buttonsAnchoredPos[k];
+                                                left = buttonsAnchoredPos[i];
+                                            }
+                                            else
+                                            {
+                                                left = buttonsAnchoredPos[k];
+                                                right = buttonsAnchoredPos[i];
+                                            }
+                                            p = Vector2.Perpendicular((right - left).normalized);
+                                            diff = (buttonsAnchoredPos[k] - buttonsAnchoredPos[i]).magnitude;
+                                            newX = (buttonsAnchoredPos[k].x + buttonsAnchoredPos[i].x) / 2;
+                                            newY = (buttonsAnchoredPos[k].y + buttonsAnchoredPos[i].y) / 2;
+                                            Vector2 positive = new Vector2(newX, newY) + 1.0f * Mathf.Sqrt(Mathf.Pow(181.0f, 2) - Mathf.Pow(diff / 2, 2)) * p;
+                                            Vector2 negative = new Vector2(newX, newY) - 1.0f * Mathf.Sqrt(Mathf.Pow(181.0f, 2) - Mathf.Pow(diff / 2, 2)) * p;
+                                            if (positive.y > 723.0f || positive.x > 1676.0f)
+                                            {
+                                                side = -1;
+                                            }
+                                            else if (negative.y < 124.0f || negative.x < 130.0f)
+                                            {
+                                                side = 1;
+                                            }
+                                            else
+                                            {
+                                                if (((right.x - left.x) * (buttonPos.GetComponent<RectTransform>().anchoredPosition.y - left.y) - (right.y - left.y) * (buttonPos.GetComponent<RectTransform>().anchoredPosition.x - left.x)) > 0)
+                                                    side = 1;
+                                                else side = -1;
+                                            }
+                                            if (side == 1) buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = positive;
+                                            else buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = negative;
+
+                                        }
+                                        else buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = tempPos;
+                                    }
+                                    else if (limitY != 0)
+                                    {
+                                        if (limitY == 1) newY = 124.0f;
+                                        else newY = 723.0f;
+                                        if (buttonsAnchoredPos[i].x + 181.0f > 1676.0f) side = -1;
+                                        else if (buttonsAnchoredPos[i].x - 181.0f < 130.0f) side = 1;
+                                        else side = px / Mathf.Abs(px);
+                                        newX = (2 * buttonsAnchoredPos[i].x + side * Mathf.Sqrt(Mathf.Pow(2 * buttonsAnchoredPos[i].x, 2) - 4.0f * (-(Mathf.Pow(181.0f, 2)) + Mathf.Pow(newY - buttonsAnchoredPos[i].y, 2) + Mathf.Pow(buttonsAnchoredPos[i].x, 2)))) / 2.0f;
+                                        tempPos = new Vector2(newX, newY);
+                                        if ((tempPos - buttonsAnchoredPos[k]).magnitude < 181.0f || (tempPos - buttonsAnchoredPos[i]).magnitude < 181.0f) side = -side; 
+                                        newX = (2 * buttonsAnchoredPos[i].x + side * Mathf.Sqrt(Mathf.Pow(2 * buttonsAnchoredPos[i].x, 2) - 4.0f * (-(Mathf.Pow(181.0f, 2)) + Mathf.Pow(newY - buttonsAnchoredPos[i].y, 2) + Mathf.Pow(buttonsAnchoredPos[i].x, 2)))) / 2.0f;
+                                        tempPos = new Vector2(newX, newY);
+                                        k = -1;
+                                        for (int j = 0; j < 6; j++)
+                                        {
+                                            if (i != j && neighbour[i][j] != 0)
+                                            {
+                                                if ((j != changingButtonPos - 1) && (tempPos - buttonsAnchoredPos[j]).magnitude < 181.0f)
+                                                {
+                                                    k = j;
+                                                }
+                                            }
+                                        }
+                                        if (k != -1)
+                                        {
+                                            Debug.Log("ola");
+                                            if (buttonsAnchoredPos[k].x > buttonsAnchoredPos[i].x)
+                                            {
+                                                left = buttonsAnchoredPos[i];
+                                                right = buttonsAnchoredPos[k];
+                                            }
+                                            else if (buttonsAnchoredPos[k].x < buttonsAnchoredPos[i].x)
+                                            {
+                                                right = buttonsAnchoredPos[i];
+                                                left = buttonsAnchoredPos[k];
+                                            }
+                                            else if (buttonsAnchoredPos[k].y > buttonsAnchoredPos[i].y)
+                                            {
+                                                right = buttonsAnchoredPos[k];
+                                                left = buttonsAnchoredPos[i];
+                                            }
+                                            else
+                                            {
+                                                left = buttonsAnchoredPos[k];
+                                                right = buttonsAnchoredPos[i];
+                                            }
+                                            p = Vector2.Perpendicular((right - left).normalized);
+                                            diff = (buttonsAnchoredPos[k] - buttonsAnchoredPos[i]).magnitude;
+                                            newX = (buttonsAnchoredPos[k].x + buttonsAnchoredPos[i].x) / 2;
+                                            newY = (buttonsAnchoredPos[k].y + buttonsAnchoredPos[i].y) / 2;
+                                            Vector2 positive = new Vector2(newX, newY) + 1.0f * Mathf.Sqrt(Mathf.Pow(181.0f, 2) - Mathf.Pow(diff / 2, 2)) * p;
+                                            Vector2 negative = new Vector2(newX, newY) - 1.0f * Mathf.Sqrt(Mathf.Pow(181.0f, 2) - Mathf.Pow(diff / 2, 2)) * p;
+                                            if (positive.y > 723.0f || positive.x > 1676.0f)
+                                            {
+                                                side = -1;
+                                            }
+                                            else if (negative.y < 124.0f || negative.x < 130.0f)
+                                            {
+                                                side = 1;
+                                            }
+                                            else
+                                            {
+                                                if (((right.x - left.x) * (buttonPos.GetComponent<RectTransform>().anchoredPosition.y - left.y) - (right.y - left.y) * (buttonPos.GetComponent<RectTransform>().anchoredPosition.x - left.x)) > 0)
+                                                    side = 1;
+                                                else side = -1;
+                                            }
+                                            if (side == 1) buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = positive;
+                                            else buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = negative;
+
+                                        }
+                                        else
+                                        {
+                                            if (tempPos.x > 1676.0f)
+                                            {
+                                                newX = 1676.0f;
+                                                limitX = 2;
+                                            }
+                                            else if (tempPos.x < 130.0f)
+                                            {
+                                                newX = 130.0f;
+                                                limitX = 1;
+                                            }
+                                            else newX = tempPos.x;
+                                            if (tempPos.y < 124.0f)
+                                            {
+                                                newY = 124.0f;
+                                                limitY = 1;
+                                            }
+                                            else if (tempPos.y > 723.0f)
+                                            {
+                                                newY = 723.0f;
+                                                limitY = 2;
+                                            }
+                                            else newY = tempPos.y;
+                                            tempPos = new Vector2(newX, newY);                                        
+                                            if (limitX != 0)
+                                            {
+                                                if (limitX == 1) newX = 130.0f;
+                                                else newX = 1676.0f;
+                                                if (buttonsAnchoredPos[i].y + 181.0f > 723.0f) side = -1;
+                                                else if (buttonsAnchoredPos[i].y - 181.0f < 124.0f) side = 1;
+                                                else side = py / Mathf.Abs(py);
+                                                newY = (2 * buttonsAnchoredPos[i].y + side * Mathf.Sqrt(Mathf.Pow(2 * buttonsAnchoredPos[i].y, 2) - 4.0f * (-(Mathf.Pow(181.0f, 2)) + Mathf.Pow(tempPos.x - buttonsAnchoredPos[i].x, 2) + Mathf.Pow(buttonsAnchoredPos[i].y, 2)))) / 2.0f;
+                                                tempPos = new Vector2(newX, newY);
+                                                buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY);
+                                            }
+                                            else if (limitY != 0)
+                                            {
+                                                if (limitY == 1) newY = 124.0f;
+                                                else newY = 723.0f;
+                                                if (buttonsAnchoredPos[i].x + 181.0f > 1676.0f) side = -1;
+                                                else if (buttonsAnchoredPos[i].x - 181.0f < 130.0f) side = 1;
+                                                else side = px / Mathf.Abs(px);
+                                                newX = (2 * buttonsAnchoredPos[i].x + side * Mathf.Sqrt(Mathf.Pow(2 * buttonsAnchoredPos[i].x, 2) - 4.0f * (-(Mathf.Pow(181.0f, 2)) + Mathf.Pow(tempPos.y - buttonsAnchoredPos[i].y, 2) + Mathf.Pow(buttonsAnchoredPos[i].x, 2)))) / 2.0f;
+                                                tempPos = new Vector2(newX, newY);
+                                                buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(newX, newY);
+                                            }
+                                            buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = tempPos;
+                                        }
+                                    }
+                                }
                             }
                             else
                             {
