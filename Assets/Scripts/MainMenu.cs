@@ -295,9 +295,40 @@ public class MainMenu : MonoBehaviour
     {
         if(changingButtonPos != 0)
         {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), Input.mousePosition, GetComponent<Canvas>().worldCamera, out newButtonPos);
-            if (changingButtonPos == 4)
+            if (Input.touchCount > 0)
             {
+                Touch touch = Input.GetTouch(0);
+
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), touch.position, GetComponent<Canvas>().worldCamera, out newButtonPos);
+                if (changingButtonPos == 4)
+                {
+                    Vector2 tempPos;
+                    bool found = false;
+                    buttonPos.transform.position = GetComponent<Transform>().TransformPoint(newButtonPos);
+                    tempPos = buttonPos.GetComponent<RectTransform>().anchoredPosition;
+                    if (tempPos.x > 1676.0f || tempPos.x < 130.0f || tempPos.y < 124.0f || tempPos.y > 723.0f) found = true;
+                    int i = 0;
+                    while (i < 6 && !found)
+                    {
+                        if (i != changingButtonPos - 1 && !(i == 2 && PlayerPrefs.GetInt("MovementMode") == 0) && !((i == 0 || i == 1) && PlayerPrefs.GetInt("MovementMode") == 1))
+                        {
+                            if ((buttonsAnchoredPos[i] - tempPos).magnitude < 181.0f)
+                                found = true;
+                            else i++;
+                        }
+                        else i++;
+                    }
+                    if (!found)
+                    {
+                        Debug.Log("ola");
+                        buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = tempPos;
+                    }
+                }
+
+            }
+            
+
+                /*
                 Vector2 tempPos;
                 int limitX;
                 int limitY;
@@ -775,8 +806,8 @@ public class MainMenu : MonoBehaviour
                     PlayerPrefs.SetFloat("JumpButtonY", (newButtonPos.y - 0.039f) / 0.9144895f);
                     buttonsAnchoredPos[changingButtonPos - 1] = new Vector2(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.x * 1856.0f, buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.y * 855.0f);
                     changingButtonPos = 0;
-                }
-            }            
+                }*/
+                       
         }
     }
     void FixedUpdate()
@@ -819,6 +850,7 @@ public class MainMenu : MonoBehaviour
             j = i + 1;
         }
     }
+
     //Function to close the game
     public void CloseGame()
     {
@@ -1058,8 +1090,22 @@ public class MainMenu : MonoBehaviour
     public void StartChangeButtonPos(int i)
     {
         changingButtonPos = i;
+        Vector2 tempPos = buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin;
         buttons[changingButtonPos-1].GetComponent<RectTransform>().anchorMin = new Vector2(0.0f,0.0f);
         buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMax = new Vector2(0.0f, 0.0f);
+        buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(tempPos.x * 1856.0f, tempPos.y * 855.0f);
+    }
+
+    public void EndChangeButtonPos()
+    {
+        newButtonPos = new Vector2(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.x / buttons[changingButtonPos - 1].transform.parent.GetComponent<RectTransform>().rect.width, buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition.y / buttons[changingButtonPos - 1].transform.parent.GetComponent<RectTransform>().rect.height);
+        buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin = newButtonPos;
+        buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMax = newButtonPos;
+        buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, 0.0f);
+        PlayerPrefs.SetFloat("JumpButtonX", (newButtonPos.x - 0.021f) / 0.9314612f);
+        PlayerPrefs.SetFloat("JumpButtonY", (newButtonPos.y - 0.039f) / 0.9144895f);
+        buttonsAnchoredPos[changingButtonPos - 1] = new Vector2(buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.x * 1856.0f, buttons[changingButtonPos - 1].GetComponent<RectTransform>().anchorMin.y * 855.0f);
+        changingButtonPos = 0;
     }
 
     //Function to open the credits menu
